@@ -1,0 +1,19 @@
+{
+  "name": "quotepilot-ios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QuotePilot contractor estimates \u2014 bundled iOS app",
+  "scripts": {
+    "ios:add": "cap add ios",
+    "ios:sync": "cap sync ios",
+    "ios:open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.0",
+    "@capacitor/ios": "^7.4.0",
+    "@capacitor/share": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.0"
+  }
+}

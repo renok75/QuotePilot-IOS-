@@ -1,0 +1,52 @@
+workflows:
+  ios-simulator-check:
+    name: QuotePilot - unsigned iOS simulator check
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      node: 22
+    scripts:
+      - name: Install JavaScript dependencies
+        script: npm install --no-audit --no-fund
+      - name: Generate iOS project
+        script: |
+          npx cap add ios
+          npx cap sync ios
+          python3 scripts/prepare_ios.py
+          cd ios/App && pod install
+      - name: Compile iOS simulator app without signing
+        script: |
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/derived CODE_SIGNING_ALLOWED=NO build
+    artifacts:
+      - build/derived/Build/Products/Debug-iphonesimulator/*.app
+      - /tmp/xcodebuild_logs/*.log
+
+  ios-app-store:
+    name: QuotePilot - signed App Store IPA
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    # SETUP REQUIRED: Replace the integration name below with your Codemagic
+    # App Store Connect API key integration name before starting this workflow.
+    integrations:
+      app_store_connect: REPLACE_WITH_CODEMAGIC_APP_STORE_CONNECT_INTEGRATION
+    environment:
+      node: 22
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.renok75.quotepilot
+    scripts:
+      - name: Install JavaScript dependencies
+        script: npm install --no-audit --no-fund
+      - name: Generate iOS project
+        script: |
+          npx cap add ios
+          npx cap sync ios
+          python3 scripts/prepare_ios.py
+          cd ios/App && pod install
+      - name: Apply Apple provisioning profiles
+        script: xcode-project use-profiles
+      - name: Build signed IPA
+        script: xcode-project build-ipa --workspace ios/App/App.xcworkspace --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log

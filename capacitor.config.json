@@ -1,0 +1,9 @@
+{
+  "appId": "com.renok75.quotepilot",
+  "appName": "QuotePilot",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "automatic",
+    "allowsLinkPreview": false
+  }
+}
