@@ -10,10 +10,12 @@ workflows:
         script: npm install --no-audit --no-fund
       - name: Generate iOS project
         script: |
-          npx cap add ios
-          npx cap sync ios
-          python3 scripts/prepare_ios.py
-          cd ios/App && pod install
+            npx cap add ios
+            npx cap sync ios
+            python3 scripts/prepare_ios.py
+            mkdir -p ios/App/App/public
+            cp -R www/. ios/App/App/public/
+            cd ios/App && pod install
       - name: Compile iOS simulator app without signing
         script: |
           xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/derived CODE_SIGNING_ALLOWED=NO build
